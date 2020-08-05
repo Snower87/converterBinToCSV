@@ -17,15 +17,15 @@ public class ServiceObm {
     /**
      * поле содержит все обмены и их параметры
      */
-    private Map<ProtocolObm, List<ParamObm>> obmens = new HashMap<>();
+    private Map<Abonent, List<Param>> abonents = new HashMap<>();
 
     /**
      * Добавление нового абонента из протокола обмена
-     * @param obm имя пользователя
+     * @param abonent имя абонента
      */
-    public void addObmen(ProtocolObm obm) {
+    public void addObmen(Abonent abonent) {
         //если кодовый обмен не найден, то добавляем его
-        obmens.putIfAbsent(obm, new ArrayList<ParamObm>());
+        abonents.putIfAbsent(abonent, new ArrayList<Param>());
     }
 
     /**
@@ -33,15 +33,15 @@ public class ServiceObm {
      * @param name название абонента
      * @param newParam новый счет пользователя
      */
-    public void addParam(String name, ParamObm newParam) {
+    public void addParam(String name, Param newParam) {
         //1. Находим обмен по названию
-        ProtocolObm obm = findByObmen(name);
+        Abonent abonent = findByObmen(name);
 
         //2. Проверяем, что обмен существует (найден)
-        if (obm != null) {
+        if (abonent != null) {
 
             //3. Получаем все параметры обмена для абонента
-            List<ParamObm> paramObmAll = obmens.get(obm);
+            List<Param> paramObmAll = abonents.get(abonent);
 
             //4. Проверяем, что обмена есть какие-то параметры (не равно null)
             if (paramObmAll != null) {
@@ -56,13 +56,13 @@ public class ServiceObm {
     }
 
     /**
-     * Поиск обмена по названию
-     * @param nameObmen название абонента
-     * @return обмен ProtocolObm при успешном поиске, null - если абонента не нашли
+     * Поиск обмена по его названию
+     * @param nameAbonent название абонента
+     * @return обмен Abonent при успешном поиске, null - если абонента не нашли
      */
-    public ProtocolObm findByObmen(String nameObmen) {
-        return obmens.keySet().stream()
-                .filter(user -> user.getNameObm().equals(nameObmen))
+    public Abonent findByObmen(String nameAbonent) {
+        return abonents.keySet().stream()
+                .filter(user -> user.getNameObm().equals(nameAbonent))
                 .findFirst()
                 .orElse(null); //.orElseGet(() -> null);
     }

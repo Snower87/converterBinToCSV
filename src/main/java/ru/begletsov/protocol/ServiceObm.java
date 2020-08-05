@@ -67,5 +67,35 @@ public class ServiceObm {
                 .orElse(null); //.orElseGet(() -> null);
     }
 
+    /**
+     * Поиск параметра по его названию (сокращенному)
+     * @param name название абонента
+     * @return обмен Abonent при успешном поиске, null - если абонента не нашли
+     */
+    public Param findByParam(String name, String nameSmall) {
+        //1. Находим обмен по названию
+        Abonent abonent = findByObmen(name);
+
+        //2. Абонент найден?
+        if (abonent != null) {
+            //2.1 Да, абонент найден
+
+            //3. Получаем все параметры для абонента
+            List<Param> paramObmAll = abonents.get(abonent);
+
+            //4. Пробегаемся по всем счетам пользователя,
+            //   отфильтровываем по реквизитам пользователя,
+            //   возвращаем аккаунт пользователя при нахождении
+            return paramObmAll.stream()
+                    .filter(account -> account.getNameSmall()
+                            .equals(nameSmall))
+                    .findFirst()
+                    .get();
+        }
+        //2.2 Нет, абонент не найлен
+
+        return null;
+    }
+
 
 }

@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Класс ParamObm реализует сервис по добавлению новых обменов и их параметров
+ * Класс Service реализует сервис по добавлению новых обменов и их параметров
  * 1) создание класса
  * @author Sergei Begletsov
  * @since 05.08.2020
  * @version 1
  */
 
-public class ServiceObm {
+public class Service {
     /**
      * поле содержит все обмены и их параметры
      */

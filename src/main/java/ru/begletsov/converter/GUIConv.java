@@ -1,18 +1,24 @@
 package ru.begletsov.converter;
 
+import ru.begletsov.frame.FrameSelectParam;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 
 public class GUIConv extends JFrame {
     private JLabel text1;
     private JFileChooser fileChooser;
     private JButton buttonOpenFileChoser;
+    private JButton buttonSelectParam;
     private File[] selectedFiles;
     private File directory;
+    private FrameSelectParam frameSelectParam;
 
     public GUIConv() {
         super("Конвертер Bin -> CSV файлов");
@@ -20,7 +26,10 @@ public class GUIConv extends JFrame {
         text1 = new JLabel("Пробный текст");
         text1.setToolTipText("Просто так");
         buttonOpenFileChoser = new JButton("Выберите файлы");
+        buttonSelectParam = new JButton("Выберите параметры");
+        frameSelectParam = new FrameSelectParam();
         add(buttonOpenFileChoser);
+        add(buttonSelectParam);
         add(text1);
 
         //fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -49,9 +58,12 @@ public class GUIConv extends JFrame {
             }
         });
 
-
-
-
+        buttonSelectParam.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frameSelectParam.setVisible(true);
+            }
+        });
 
         int asdasd = 0;
         asdasd++;

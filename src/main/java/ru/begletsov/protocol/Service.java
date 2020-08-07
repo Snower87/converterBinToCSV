@@ -1,16 +1,13 @@
 package ru.begletsov.protocol;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Класс Service реализует сервис по добавлению новых обменов и их параметров
- * 1) создание класса
+ * 1) создание класса 2) добавил методы: getListParamForAbonent(), getListAllAbonents()
  * @author Sergei Begletsov
  * @since 05.08.2020
- * @version 1
+ * @version 2
  */
 
 public class Service {
@@ -97,5 +94,27 @@ public class Service {
         return null;
     }
 
+    /**
+     * Получить список параметров для абонента
+     * @param name название абонента
+     * @return список параметров для абонента при успешном поиске, null - если параметров нету
+     */
+    public List<Param> getListParamForAbonent(String name) {
+        //1. Находим обмен по названию
+        Abonent abonent = findByObmen(name);
 
+        if (abonent != null) {
+            //List<Param> rsl = new L
+            return abonents.get(abonent);
+        }
+        return null;
+    }
+
+    /**
+     * Получить список всех абонентов
+     * @return список всех абонентов
+     */
+    public Set<Abonent> getListAllAbonents() {
+        return abonents.keySet();
+    }
 }

@@ -1,5 +1,6 @@
 package ru.begletsov.frame;
 
+import ru.begletsov.chose_param.ListCheckBoxAbonent;
 import ru.begletsov.chose_param.ListChoseParam;
 import ru.begletsov.component.CheckBoxList;
 import ru.begletsov.protocol.Abonent;
@@ -18,17 +19,15 @@ import java.util.stream.Collectors;
  * Класс FrameSelectParam - окно выбора параметров
  * 1) создание класса 2) добавил объект класса Service со списком абонентов + методы добавляющие абоненты и их пар-ры
  * 3) добавил списки listCheckBox для каждого абонента: BVKsh, BPS_UVKE_SM, KI, J1939 4) чистка проекта, добавил новые параметры для абонентов
+ * 5) добавил список listCheckBoxAbonent, который содержит в себе все списки для абонентов: listCheckBox_BVKsh, BPS_UVKE_SM, KI, J1939 и т.д.
  * @author Sergei Begletsov
  * @since 07.08.2020
- * @version 4
+ * @version 5
  */
 
 public class FrameSelectParam extends JFrame {
     private JTabbedPane tabbedPane;
-    private List<JCheckBox> listCheckBox_BVKsh;
-    private List<JCheckBox> listCheckBox_BPS_UVKE_SM;
-    private List<JCheckBox> listCheckBox_KI;
-    private List<JCheckBox> listCheckBox_J1939;
+    private ListCheckBoxAbonent listCheckBoxAbonent;
     private ListChoseParam listChoseParam;
     private Service serviceAbonentsAndParam;
 
@@ -46,10 +45,7 @@ public class FrameSelectParam extends JFrame {
         setSize(400, 400);
         setLocationByPlatform(true);
 
-        listCheckBox_BVKsh = new ArrayList<>();
-        listCheckBox_BPS_UVKE_SM = new ArrayList<>();
-        listCheckBox_KI = new ArrayList<>();
-        listCheckBox_J1939 = new ArrayList<>();
+        listCheckBoxAbonent = new ListCheckBoxAbonent();
         listChoseParam = new ListChoseParam();
         serviceAbonentsAndParam = new Service();
         this.addAbonentsRS485();
@@ -72,20 +68,7 @@ public class FrameSelectParam extends JFrame {
                 CheckBoxList checkBoxListCurrAbonent = new CheckBoxList();
                 checkBoxListCurrAbonent.setListData(massCheckBoxes);
 
-                switch (nameObmen) {
-                    case "BR_BVKsh":
-                        listCheckBox_BVKsh = Arrays.asList(massCheckBoxes);
-                        break;
-                    case "BR_KI":
-                        listCheckBox_KI = Arrays.asList(massCheckBoxes);
-                        break;
-                    case "BR_J1939":
-                        listCheckBox_J1939 = Arrays.asList(massCheckBoxes);
-                        break;
-                    case "BR_BPS_UVKE_SM":
-                        listCheckBox_BPS_UVKE_SM = Arrays.asList(massCheckBoxes);
-                        break;
-                }
+                listCheckBoxAbonent.setListCheckBoxByNameAbonent(nameObmen, Arrays.asList(massCheckBoxes));
                 tabbedPane.addTab(nameObmen, checkBoxListCurrAbonent);
             }
         }
@@ -99,10 +82,10 @@ public class FrameSelectParam extends JFrame {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                listChoseParam.setListChoseParam_BVKsh(getChoseUserParam(listCheckBox_BVKsh));
-                listChoseParam.setListChoseParam_UVKE_SM(getChoseUserParam(listCheckBox_BPS_UVKE_SM));
-                listChoseParam.setListChoseParam_KI(getChoseUserParam(listCheckBox_KI));
-                listChoseParam.setListChoseParam_J1939(getChoseUserParam(listCheckBox_J1939));
+                listChoseParam.setListChoseParam_BVKsh(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_BVKsh")));
+                listChoseParam.setListChoseParam_UVKE_SM(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_BPS_UVKE_SM")));
+                listChoseParam.setListChoseParam_KI(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_KI")));
+                listChoseParam.setListChoseParam_J1939(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_J1939")));
             }
 
             @Override

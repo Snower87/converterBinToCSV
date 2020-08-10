@@ -9,13 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 
 public class GUIConv extends JFrame {
     private JLabel text1;
     private JFileChooser fileChooser;
     private JButton buttonOpenFileChoser;
     private JButton buttonSelectParam;
+    private JButton buttonParseFile;
     private File[] selectedFiles;
     private File directory;
     private FrameSelectParam frameSelectParam;
@@ -27,9 +29,11 @@ public class GUIConv extends JFrame {
         text1.setToolTipText("Просто так");
         buttonOpenFileChoser = new JButton("Выберите файлы");
         buttonSelectParam = new JButton("Выберите параметры");
+        buttonParseFile = new JButton("Конвертировать");
         frameSelectParam = new FrameSelectParam();
         add(buttonOpenFileChoser);
         add(buttonSelectParam);
+        add(buttonParseFile);
         add(text1);
 
         //fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -62,6 +66,38 @@ public class GUIConv extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frameSelectParam.setVisible(true);
+            }
+        });
+
+        buttonParseFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream();
+
+                try(FileInputStream InputFile = new FileInputStream(selectedFiles[0])) {
+
+                    long before = System.currentTimeMillis();
+                    byte[] buffer = new byte[InputFile.available()];
+                    // считаем файл в буфер
+                    InputFile.read(buffer, 0, InputFile.available());
+
+                    ArrayList markerCycleAtFile = new ArrayList();
+
+                    for (int index = 1; index < buffer.length; index++) {
+                        if (buffer[index-1] == (byte)0x01 && buffer[index] == (byte)0x01) {
+                            markerCycleAtFile.add(index - 1);
+                        }
+                    }
+                    long after = System.currentTimeMillis();
+                    long rslt = after - before; //35 ms, 90 ms, 135 ms
+
+                    int a = 10;
+                } catch (IOException ioe) {
+                    System.out.println(ioe.getMessage());
+                } finally {
+                    //close open file
+                }
+
             }
         });
 

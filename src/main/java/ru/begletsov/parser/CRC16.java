@@ -108,8 +108,8 @@ public class CRC16 implements Checksum {
     public byte[] getCrcBytes() {
         long crc = (int) this.getValue();
         byte[] byteStr = new byte[2];
-        byteStr[0] = (byte) ((crc & 0x000000ff));
-        byteStr[1] = (byte) ((crc & 0x0000ff00) >>> 8);
+        byteStr[0] = (byte) ((crc & 0x0000ff00) >>> 8);
+        byteStr[1] = (byte) ((crc & 0x000000ff));
         return byteStr;
     }
 }

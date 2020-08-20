@@ -1,6 +1,7 @@
 package ru.begletsov.converter;
 
 import ru.begletsov.frame.FrameSelectParam;
+import ru.begletsov.parser.CRC16;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -11,6 +12,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GUIConv extends JFrame {
     private JLabel text1;
@@ -72,32 +75,53 @@ public class GUIConv extends JFrame {
         buttonParseFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream();
+                try {
+                    for (File filePath: selectedFiles) {
+                        try(FileInputStream fileInput = new FileInputStream(filePath)) {
+                            //выделяем память и считываем файл целиком
+                            byte[] buffer = new byte[fileInput.available()];
+                            fileInput.read(buffer, 0, fileInput.available());
 
-                try(FileInputStream InputFile = new FileInputStream(selectedFiles[0])) {
+                            List markerCycleAtFile = new ArrayList();
+                            long before = System.currentTimeMillis();
+                            for (int index = 1; index < buffer.length; index++) {
+                                if (buffer[index-1] == (byte)0x01 && buffer[index] == (byte)0x01
+                                    && index + 55 < buffer.length)
+                                {
+                                    //1. Выделяем память под обмен БВК: 0х01, 0х01
+                                    byte[] bufferAbonent = new byte[55];
+                                    int lenBuff = bufferAbonent.length;
+                                    bufferAbonent = Arrays.copyOfRange(buffer,index - 1, index - 1 + 55);
+                                    //2. Считаем CRC
+                                    CRC16 crc16 = new CRC16();
+                                    crc16.calc(Arrays.copyOfRange(bufferAbonent, 0, bufferAbonent.length - 2));
+                                    //3. Сверяем CRC: расчетный и из файла
+                                    if (crc16.getHi() == bufferAbonent[lenBuff -2] && crc16.getLow() == bufferAbonent[lenBuff - 1]) {
+                                        //4. Добавляем в список начало нового цикла
+                                        markerCycleAtFile.add(index - 1);
+                                    }
+                                }
+                            }
 
-                    long before = System.currentTimeMillis();
-                    byte[] buffer = new byte[InputFile.available()];
-                    // считаем файл в буфер
-                    InputFile.read(buffer, 0, InputFile.available());
+                            fileInput.close();
 
-                    ArrayList markerCycleAtFile = new ArrayList();
+                            long after = System.currentTimeMillis();
+                            long rslt = after - before;
+                            System.out.println(rslt);
 
-                    for (int index = 1; index < buffer.length; index++) {
-                        if (buffer[index-1] == (byte)0x01 && buffer[index] == (byte)0x01) {
-                            markerCycleAtFile.add(index - 1);
+                        } catch (FileNotFoundException fne) {
+                            System.out.println(fne.getMessage());
+                        } catch (IOException ioe) {
+                            System.out.println(ioe.getMessage());
+                        } finally {
+
                         }
                     }
-                    long after = System.currentTimeMillis();
-                    long rslt = after - before; //35 ms, 90 ms, 135 ms
-
-                    int a = 10;
-                } catch (IOException ioe) {
-                    System.out.println(ioe.getMessage());
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 } finally {
-                    //close open file
-                }
 
+                }
             }
         });
 

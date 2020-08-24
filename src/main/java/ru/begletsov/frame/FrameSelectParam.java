@@ -20,9 +20,10 @@ import java.util.stream.Collectors;
  * 1) создание класса 2) добавил объект класса Service со списком абонентов + методы добавляющие абоненты и их пар-ры
  * 3) добавил списки listCheckBox для каждого абонента: BVKsh, BPS_UVKE_SM, KI, J1939 4) чистка проекта, добавил новые параметры для абонентов
  * 5) добавил список listCheckBoxAbonent, который содержит в себе все списки для абонентов: listCheckBox_BVKsh, BPS_UVKE_SM, KI, J1939 и т.д.
+ * 6) добавил список выбранных пользователем параметров listChosenParams (+ геттер)
  * @author Sergei Begletsov
  * @since 07.08.2020
- * @version 5
+ * @version 6
  */
 
 public class FrameSelectParam extends JFrame {
@@ -30,6 +31,7 @@ public class FrameSelectParam extends JFrame {
     private ListCheckBoxAbonent listCheckBoxAbonent;
     private ListChoseParam listChoseParam;
     private Service serviceAbonentsAndParam;
+    private List<Param> listChosenParams;
 
     public FrameSelectParam() throws HeadlessException {
         setVisible(false);
@@ -48,6 +50,8 @@ public class FrameSelectParam extends JFrame {
         listCheckBoxAbonent = new ListCheckBoxAbonent();
         listChoseParam = new ListChoseParam();
         serviceAbonentsAndParam = new Service();
+        listChosenParams = new ArrayList<>();
+
         this.addAbonentsRS485();
         this.addParamRS485();
 
@@ -86,6 +90,12 @@ public class FrameSelectParam extends JFrame {
                 listChoseParam.setListChoseParam_UVKE_SM(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_BPS_UVKE_SM")));
                 listChoseParam.setListChoseParam_KI(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_KI")));
                 listChoseParam.setListChoseParam_J1939(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_J1939")));
+
+                listChoseParam.setListChosenParam(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_BVKsh")));
+                listChoseParam.setListChosenParam(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_BPS_UVKE_SM")));
+                listChoseParam.setListChosenParam(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_KI")));
+                listChoseParam.setListChosenParam(getChoseUserParam(listCheckBoxAbonent.getListCheckBoxByNameAbonent("BR_J1939")));
+                getListChosenParams();
             }
 
             @Override
@@ -166,5 +176,40 @@ public class FrameSelectParam extends JFrame {
         serviceAbonentsAndParam.addParam("BR_J1939", new Param((byte)0x02, (byte)0x01, (short) 5, "REQ", "BR_J1939", "Уставка по моменту дизеля", "M_Diezel_ust", "ANLG2", (byte)0, 1, 1, 1));
         serviceAbonentsAndParam.addParam("BR_J1939", new Param((byte)0x02, (byte)0x01, (short) 9, "REQ", "BR_J1939", "Текущая скорость", "Engine_Speed", "ANLG1", (byte)0, 0.125f, 0, 2));
         serviceAbonentsAndParam.addParam("BR_J1939", new Param((byte)0x02, (byte)0x01, (short) 54, "REQ", "BR_J1939", "Моточасы", "Моточасы", "ANLG1", (byte)0, 0.05f, 0, 4));
+    }
+
+
+    /**
+     * Получить список выбранных пользователем параметров
+     * @return список параметров
+     */
+    public void getListChosenParams() {
+        Set<Abonent> abonentSet = serviceAbonentsAndParam.getListAllAbonents();
+        for (Abonent abonent: abonentSet) {
+            String nameObmen = abonent.getNameObm();
+            //если у абонента есть параметры, то добавляю его на панель tabbedPane
+            if (serviceAbonentsAndParam.getListParamForAbonent(nameObmen).size() != 0) {
+                //получаю список пар-ров обмена для абонента
+                List<Param> listParamForAbonent = serviceAbonentsAndParam.getListParamForAbonent(nameObmen);
+                int countParam = serviceAbonentsAndParam.getListParamForAbonent(nameObmen).size();
+                //получаю список выбранных пользователем параметров
+                List userChosenParam = listChoseParam.getListChosenParam();
+                JCheckBox[] massCheckBoxes = new JCheckBox[countParam];
+                for (int t = 0; t < countParam; t++) {
+                    String nameSmall = listParamForAbonent.get(t).getNameSmall();
+                    if (listChoseParam.getIndexChosenParam(nameSmall) >= 0) {
+                        listChosenParams.add(listParamForAbonent.get(t));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Получить данные обо всех абонентах и их параметрах
+     * @return заполненный объект Service
+     */
+    public Service getServiceAbonentsAndParam() {
+        return serviceAbonentsAndParam;
     }
 }

@@ -5,10 +5,10 @@ import java.util.List;
 
 /**
  * Класс-данных ListChoseParam содержит все выбранные параметры из окна FrameSelectParam
- * 1) создание класса
+ * 1) создание класса 2) добавил список всех выбранных пользователем параметров listChosenParam (а также методы get-set)
  * @author Sergei Begletsov
  * @since 07.08.2020
- * @version 1
+ * @version 2
  */
 
 public class ListChoseParam {
@@ -24,6 +24,7 @@ public class ListChoseParam {
     private List listChoseParam_P10x;
     private List listChoseParam_DIAGN;
     private List listChoseParam_CORR1;
+    private List listChosenParam;
 
     public ListChoseParam() {
         listChoseParam_BVKsh = new ArrayList();
@@ -38,6 +39,7 @@ public class ListChoseParam {
         listChoseParam_P10x = new ArrayList();
         listChoseParam_DIAGN = new ArrayList();
         listChoseParam_CORR1 = new ArrayList();
+        listChosenParam = new ArrayList();
     }
 
     public List getListChoseParam_BVKsh() {
@@ -88,6 +90,10 @@ public class ListChoseParam {
         return listChoseParam_CORR1;
     }
 
+    public List getListChosenParam() {
+        return listChosenParam;
+    }
+
     public void setListChoseParam_BVKsh(List listChoseParam_BVKsh) {
         this.listChoseParam_BVKsh = listChoseParam_BVKsh;
     }
@@ -134,5 +140,15 @@ public class ListChoseParam {
 
     public void setListChoseParam_CORR1(List listChoseParam_CORR1) {
         this.listChoseParam_CORR1 = listChoseParam_CORR1;
+    }
+
+    public void setListChosenParam(List listChosenParam) {
+        for (Object obj: listChosenParam) {
+            this.listChosenParam.add(obj);
+        }
+    }
+
+    public int getIndexChosenParam(String nameParam) {
+        return this.listChosenParam.indexOf(nameParam);
     }
 }

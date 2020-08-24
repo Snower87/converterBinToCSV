@@ -75,23 +75,32 @@ public class GUIConv extends JFrame {
         buttonParseFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                FileInputStream fileInput = null;
+                FileOutputStream fileOutput = null;
+                String headerTable = new String("N_Cycle");
+                String delimiter = ", ";
+
                 try {
                     for (File filePath: selectedFiles) {
-                        try(FileInputStream fileInput = new FileInputStream(filePath)) {
+                        try {
+                            fileInput = new FileInputStream(filePath);
+                            fileOutput = new FileOutputStream("ExistFile.csv");
                             //выделяем память и считываем файл целиком
                             byte[] buffer = new byte[fileInput.available()];
                             fileInput.read(buffer, 0, fileInput.available());
+                            //запись шапки таблицы
+                            fileOutput.write(headerTable.getBytes());
 
                             List markerCycleAtFile = new ArrayList();
                             long before = System.currentTimeMillis();
-                            for (int index = 1; index < buffer.length; index++) {
-                                if (buffer[index-1] == (byte)0x01 && buffer[index] == (byte)0x01
+                            for (int index = 0; index < buffer.length - 1; index++) {
+                                if (buffer[index] == (byte)0x01 && buffer[index + 1] == (byte)0x01
                                     && index + 55 < buffer.length)
                                 {
                                     //1. Выделяем память под обмен БВК: 0х01, 0х01
                                     byte[] bufferAbonent = new byte[55];
                                     int lenBuff = bufferAbonent.length;
-                                    bufferAbonent = Arrays.copyOfRange(buffer,index - 1, index - 1 + 55);
+                                    bufferAbonent = Arrays.copyOfRange(buffer, index, index + 55);
                                     //2. Считаем CRC
                                     CRC16 crc16 = new CRC16();
                                     crc16.calc(Arrays.copyOfRange(bufferAbonent, 0, bufferAbonent.length - 2));
@@ -99,11 +108,12 @@ public class GUIConv extends JFrame {
                                     if (crc16.getHi() == bufferAbonent[lenBuff -2] && crc16.getLow() == bufferAbonent[lenBuff - 1]) {
                                         //4. Добавляем в список начало нового цикла
                                         markerCycleAtFile.add(index - 1);
+                                        fileOutput.write(Integer.toString(index).getBytes());
+                                        fileOutput.write(delimiter.getBytes());
+                                        fileOutput.write(System.lineSeparator().getBytes());
                                     }
                                 }
                             }
-
-                            fileInput.close();
 
                             long after = System.currentTimeMillis();
                             long rslt = after - before;
@@ -114,7 +124,21 @@ public class GUIConv extends JFrame {
                         } catch (IOException ioe) {
                             System.out.println(ioe.getMessage());
                         } finally {
+                            try {
+                                if (fileInput != null) {
+                                    fileInput.close();
+                                }
+                            } catch (IOException exc) {
+                                System.out.println("Ошибка при закрытии входного файла: " + exc);
+                            }
 
+                            try {
+                                if (fileOutput != null) {
+                                    fileOutput.close();
+                                }
+                            } catch (IOException exc) {
+                                System.out.println("Ошибка при закрытии выходного файла: " + exc);
+                            }
                         }
                     }
                 } catch (Exception ex) {

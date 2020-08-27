@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
  * 1) создание класса 2) добавил объект класса Service со списком абонентов + методы добавляющие абоненты и их пар-ры
  * 3) добавил списки listCheckBox для каждого абонента: BVKsh, BPS_UVKE_SM, KI, J1939 4) чистка проекта, добавил новые параметры для абонентов
  * 5) добавил список listCheckBoxAbonent, который содержит в себе все списки для абонентов: listCheckBox_BVKsh, BPS_UVKE_SM, KI, J1939 и т.д.
- * 6) добавил список выбранных пользователем параметров listChosenParams (+ геттер)
+ * 6) добавил список выбранных пользователем параметров listChosenParams (+ геттер) 7) добавил нового абонента 0x01 0x01 (BR_BVK)
  * @author Sergei Begletsov
  * @since 07.08.2020
- * @version 6
+ * @version 7
  */
 
 public class FrameSelectParam extends JFrame {
@@ -138,6 +138,7 @@ public class FrameSelectParam extends JFrame {
     }
 
     public void addAbonentsRS485() {
+        serviceAbonentsAndParam.addObmen(new Abonent((byte)0x01, (byte)0x01, (short) 55, (short) 0,"BR_BVK"));
         serviceAbonentsAndParam.addObmen(new Abonent((byte)0x01, (byte)0x02, (short) 64, (short) 0,"BR_BVKsh"));
         serviceAbonentsAndParam.addObmen(new Abonent((byte)0x01, (byte)0x03, (short) 64, (short) 0,"BR_BPS_UVKE_SM"));
         serviceAbonentsAndParam.addObmen(new Abonent((byte)0x01, (byte)0x04, (short) 52, (short) 0,"BR_KI"));
@@ -183,7 +184,7 @@ public class FrameSelectParam extends JFrame {
      * Получить список выбранных пользователем параметров
      * @return список параметров
      */
-    public void getListChosenParams() {
+    public List<Param> getListChosenParams() {
         Set<Abonent> abonentSet = serviceAbonentsAndParam.getListAllAbonents();
         for (Abonent abonent: abonentSet) {
             String nameObmen = abonent.getNameObm();
@@ -203,6 +204,7 @@ public class FrameSelectParam extends JFrame {
                 }
             }
         }
+        return listChosenParams;
     }
 
     /**

@@ -14,7 +14,7 @@ public class Service {
     /**
      * поле содержит все обмены и их параметры
      */
-    private Map<Abonent, List<Param>> abonents = new HashMap<>();
+    private Map<Abonent, List<Param>> abonents = new LinkedHashMap<>();
 
     /**
      * Добавление нового абонента из протокола обмена
